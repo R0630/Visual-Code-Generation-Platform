@@ -7,7 +7,7 @@
     <parent>
         <groupId>org.springframework.boot</groupId>
         <artifactId>spring-boot-starter-parent</artifactId>
-        <version>4.0.8</version>
+        <version>3.4.5</version>
         <relativePath/>
     </parent>
 
@@ -21,14 +21,28 @@
         <java.version>21</java.version>
         <mybatis-flex.version>1.11.8</mybatis-flex.version>
         <hutool.version>5.8.38</hutool.version>
-        <knife4j.version>5.6.0</knife4j.version>
+        <knife4j.version>4.5.0</knife4j.version>
+        <langchain4j.version>1.1.0</langchain4j.version>
     </properties>
 
+    <dependencyManagement>
+        <dependencies>
+            <!-- 统一管理 LangChain4j 所有模块的版本 -->
+            <dependency>
+                <groupId>dev.langchain4j</groupId>
+                <artifactId>langchain4j-bom</artifactId>
+                <version>${langchain4j.version}</version>
+                <type>pom</type>
+                <scope>import</scope>
+            </dependency>
+        </dependencies>
+    </dependencyManagement>
+
     <dependencies>
-        <!-- Spring Boot Web MVC -->
+        <!-- Spring Boot Web -->
         <dependency>
             <groupId>org.springframework.boot</groupId>
-            <artifactId>spring-boot-starter-webmvc</artifactId>
+            <artifactId>spring-boot-starter-web</artifactId>
         </dependency>
 
         <!-- Spring Boot JDBC -->
@@ -37,14 +51,14 @@
             <artifactId>spring-boot-starter-jdbc</artifactId>
         </dependency>
 
-        <!-- MyBatis-Flex Spring Boot 4 Starter -->
+        <!-- MyBatis-Flex Spring Boot 3 Starter -->
         <dependency>
             <groupId>com.mybatis-flex</groupId>
-            <artifactId>mybatis-flex-spring-boot4-starter</artifactId>
+            <artifactId>mybatis-flex-spring-boot3-starter</artifactId>
             <version>${mybatis-flex.version}</version>
         </dependency>
 
-        <!-- MyBatis-Flex 代码生成器 (provided) -->
+        <!-- MyBatis-Flex 代码生成器 -->
         <dependency>
             <groupId>com.mybatis-flex</groupId>
             <artifactId>mybatis-flex-codegen</artifactId>
@@ -60,8 +74,8 @@
 
         <!-- Knife4j OpenAPI3 Starter -->
         <dependency>
-            <groupId>com.baizhukui</groupId>
-            <artifactId>knife4j-openapi3-boot4-spring-boot-starter</artifactId>
+            <groupId>com.github.xiaoymin</groupId>
+            <artifactId>knife4j-openapi3-jakarta-spring-boot-starter</artifactId>
             <version>${knife4j.version}</version>
         </dependency>
 
@@ -85,23 +99,43 @@
             <optional>true</optional>
         </dependency>
 
-       <!-- LangChain4j -->
+        <!-- ========== LangChain4j 相关依赖 ========== -->
+        <!-- Spring Boot Starter (版本由 BOM 管理，此处无需写版本号) -->
         <dependency>
             <groupId>dev.langchain4j</groupId>
-            <artifactId>langchain4j-open-ai</artifactId>
-            <version>1.22.0</version>
+            <artifactId>langchain4j-open-ai-spring-boot-starter</artifactId>
         </dependency>
 
+        <!-- 核心库 (版本由 BOM 管理) -->
         <dependency>
             <groupId>dev.langchain4j</groupId>
             <artifactId>langchain4j</artifactId>
-            <version>1.22.0</version>
         </dependency>
+        <!-- 响应式编程依赖包       -->
+        <dependency>
+            <groupId>dev.langchain4j</groupId>
+            <artifactId>langchain4j-reactor</artifactId>
+            <version>1.1.0-beta7</version>
+        </dependency>
+
+
+        <!-- OpenAI 集成 (版本由 BOM 管理) -->
+        <dependency>
+            <groupId>dev.langchain4j</groupId>
+            <artifactId>langchain4j-open-ai</artifactId>
+        </dependency>
+
+        <!-- JDK HttpClient 集成 (版本由 BOM 管理，建议保留) -->
+        <dependency>
+            <groupId>dev.langchain4j</groupId>
+            <artifactId>langchain4j-http-client-jdk</artifactId>
+        </dependency>
+        <!-- ======================================== -->
 
         <!-- 测试依赖 -->
         <dependency>
             <groupId>org.springframework.boot</groupId>
-            <artifactId>spring-boot-starter-webmvc-test</artifactId>
+            <artifactId>spring-boot-starter-test</artifactId>
             <scope>test</scope>
         </dependency>
     </dependencies>
