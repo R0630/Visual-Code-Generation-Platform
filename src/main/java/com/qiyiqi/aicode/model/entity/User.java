@@ -1,5 +1,7 @@
 package com.qiyiqi.aicode.model.entity;
 
+import com.fasterxml.jackson.databind.annotation.JsonSerialize;
+import com.fasterxml.jackson.databind.ser.std.ToStringSerializer;
 import com.mybatisflex.annotation.Column;
 import com.mybatisflex.annotation.Id;
 import com.mybatisflex.annotation.KeyType;
@@ -18,7 +20,6 @@ import lombok.NoArgsConstructor;
 /**
  * 用户 实体类。
  *
- *
  */
 @Data
 @Builder
@@ -34,6 +35,8 @@ public class User implements Serializable {
      * id
      */
     @Id(keyType = KeyType.Generator, value = KeyGenerators.snowFlakeId)
+    // 雪花 id 为 18~19 位，超出前端安全整数范围，序列化为字符串避免精度丢失
+    @JsonSerialize(using = ToStringSerializer.class)
     private Long id;
 
     /**

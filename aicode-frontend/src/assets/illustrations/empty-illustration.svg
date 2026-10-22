@@ -1,0 +1,13 @@
+<svg width="240" height="180" viewBox="0 0 240 180" fill="none" xmlns="http://www.w3.org/2000/svg">
+  <!-- 空状态插画占位：空盒子 + 星点，用于「暂无数据」场景 -->
+
+  <ellipse cx="120" cy="140" rx="80" ry="18" fill="#EDE9FE"/>
+  <rect x="66" y="66" width="108" height="74" rx="12" fill="#FFFFFF" stroke="#C4B5FD" stroke-width="3"/>
+  <path d="M66 84a12 12 0 0 1 12-12h84a12 12 0 0 1 12 12v10H66V84z" fill="#DDD6FE"/>
+  <rect x="92" y="104" width="56" height="10" rx="5" fill="#EDE9FE"/>
+  <rect x="104" y="122" width="32" height="8" rx="4" fill="#F6F4FF"/>
+
+  <path d="M186 40l4 10 10 4-10 4-4 10-4-10-10-4 10-4 4-10z" fill="#A78BFA"/>
+  <circle cx="52" cy="52" r="7" fill="#DDD6FE"/>
+  <circle cx="200" cy="104" r="5" fill="#C4B5FD"/>
+</svg>

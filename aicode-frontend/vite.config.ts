@@ -6,16 +6,15 @@ import vueDevTools from 'vite-plugin-vue-devtools'
 
 // https://vite.dev/config/
 export default defineConfig({
-  plugins: [
-    vue(),
-    vueDevTools(),
-  ],
+  plugins: [vue(), vueDevTools()],
   resolve: {
     alias: {
       '@': fileURLToPath(new URL('./src', import.meta.url)),
     },
   },
   server: {
+    port: 5173, // 固定使用 5173 端口
+    strictPort: true, // 如果 5173 被占用，直接报错退出，而不是自动换到 5174
     proxy: {
       '/api': {
         target: 'http://localhost:8123',

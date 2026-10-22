@@ -5,9 +5,7 @@
     </a-layout-header>
 
     <a-layout-content class="layout-content">
-      <div class="content-wrapper">
-        <RouterView />
-      </div>
+      <RouterView />
     </a-layout-content>
 
     <a-layout-footer class="layout-footer">
@@ -17,20 +15,38 @@
 </template>
 
 <script setup lang="ts">
+import { computed } from 'vue'
 import { RouterView } from 'vue-router'
 import GlobalHeader from '@/components/GlobalHeader.vue'
+import type { HeaderMenuItem } from '@/components/GlobalHeader.vue'
 import GlobalFooter from '@/components/GlobalFooter.vue'
 import { routes } from '@/router'
+import { useLoginUserStore } from '@/stores/loginUser'
 
-const siteTitle = 'AI Code'
+const siteTitle = '星构 AI'
 
-const menuItems = routes
-  .filter((route) => route.meta?.title)
-  .map((route) => ({
-    key: route.name as string,
-    label: route.meta!.title as string,
-    path: route.path,
-  }))
+const loginUserStore = useLoginUserStore()
+
+/**
+ * 由路由自动生成菜单：
+ * - meta.hideInMenu 的路由（登录 / 注册 / 对话 / 编辑）不展示
+ * - /admin 开头的路由只有管理员可见
+ */
+const menuItems = computed<HeaderMenuItem[]>(() => {
+  const isAdmin = loginUserStore.loginUser.userRole === 'admin'
+  return routes
+    .filter((route) => {
+      const meta = route.meta ?? {}
+      if (meta.hideInMenu) return false
+      if (typeof route.path === 'string' && route.path.startsWith('/admin') && !isAdmin) return false
+      return true
+    })
+    .map((route) => ({
+      key: route.name as string,
+      label: (route.meta?.title as string) ?? (route.name as string),
+      path: route.path,
+    }))
+})
 </script>
 
 <style scoped>
@@ -38,6 +54,7 @@ const menuItems = routes
   min-height: 100vh;
   display: flex;
   flex-direction: column;
+  background: transparent;
 }
 
 .layout-header {
@@ -45,33 +62,27 @@ const menuItems = routes
   top: 0;
   z-index: 10;
   padding: 0 24px;
-  background: #fff;
-  box-shadow: 0 1px 4px rgba(0, 21, 41, 0.08);
+  height: 64px;
+  line-height: 64px;
+  background: rgba(255, 255, 255, 0.9);
+  backdrop-filter: blur(10px);
+  border-bottom: 1px solid var(--line);
 }
 
 .layout-content {
   flex: 1;
   min-height: 0;
-}
-
-.content-wrapper {
-  max-width: 1280px;
-  margin: 0 auto;
-  padding: 24px;
+  background: transparent;
 }
 
 .layout-footer {
-  background: #f0f2f5;
+  background: transparent;
   padding: 24px;
 }
 
 @media (max-width: 768px) {
   .layout-header {
     padding: 0 16px;
-  }
-
-  .content-wrapper {
-    padding: 16px;
   }
 }
 </style>

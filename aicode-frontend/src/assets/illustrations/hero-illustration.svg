@@ -1,0 +1,36 @@
+<svg width="420" height="300" viewBox="0 0 420 300" fill="none" xmlns="http://www.w3.org/2000/svg">
+  <!-- 首页主视觉插画占位：AI 正在生成网页（窗口 + 魔法棒 + 星点）
+       可直接替换为本项目的插画，尺寸建议 420x300 -->
+
+  <!-- 背景光斑 -->
+  <ellipse cx="210" cy="150" rx="180" ry="120" fill="#EDE9FE"/>
+  <ellipse cx="120" cy="90" rx="70" ry="50" fill="#DDD6FE" fill-opacity="0.7"/>
+  <ellipse cx="320" cy="220" rx="80" ry="55" fill="#EDE9FE" fill-opacity="0.8"/>
+
+  <!-- 主窗口 -->
+  <rect x="90" y="60" width="240" height="160" rx="16" fill="#FFFFFF" stroke="#C4B5FD" stroke-width="3"/>
+  <!-- 窗口标题栏 -->
+  <path d="M90 76a16 16 0 0 1 16-16h208a16 16 0 0 1 16 16v20H90V76z" fill="#7C3AED"/>
+  <circle cx="112" cy="86" r="5" fill="#FFFFFF" fill-opacity="0.85"/>
+  <circle cx="130" cy="86" r="5" fill="#FFFFFF" fill-opacity="0.55"/>
+  <circle cx="148" cy="86" r="5" fill="#FFFFFF" fill-opacity="0.35"/>
+
+  <!-- 窗口内容骨架 -->
+  <rect x="112" y="118" width="110" height="12" rx="6" fill="#DDD6FE"/>
+  <rect x="112" y="140" width="180" height="10" rx="5" fill="#EDE9FE"/>
+  <rect x="112" y="158" width="150" height="10" rx="5" fill="#EDE9FE"/>
+  <rect x="112" y="180" width="70" height="26" rx="13" fill="#7C3AED"/>
+  <rect x="196" y="180" width="70" height="26" rx="13" fill="#C4B5FD"/>
+
+  <!-- 魔法棒 -->
+  <g transform="rotate(-25 320 70)">
+    <rect x="300" y="52" width="14" height="90" rx="7" fill="#5B21B6"/>
+    <rect x="296" y="40" width="22" height="18" rx="9" fill="#A78BFA"/>
+  </g>
+
+  <!-- 星点装饰 -->
+  <path d="M330 40l5 12 12 5-12 5-5 12-5-12-12-5 12-5 5-12z" fill="#8B5CF6"/>
+  <path d="M72 200l3.5 8.5 8.5 3.5-8.5 3.5L72 224l-3.5-8.5L60 212l8.5-3.5L72 200z" fill="#A78BFA"/>
+  <circle cx="60" cy="70" r="6" fill="#C4B5FD"/>
+  <circle cx="360" cy="150" r="8" fill="#DDD6FE"/>
+</svg>

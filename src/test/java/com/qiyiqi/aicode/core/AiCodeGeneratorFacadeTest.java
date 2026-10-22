@@ -21,7 +21,7 @@ class AiCodeGeneratorFacadeTest {
 
     @Test
     void GenerateAndSaveCodeStream() {
-        Flux<String> codeStream = aiCodeGeneratorFacade.generateAndSaveCodeStream("生成一个登录页面", CodeGenTypeEnum.MULTI_FILE);
+        Flux<String> codeStream = aiCodeGeneratorFacade.generateAndSaveCodeStream("生成一个登录页面", CodeGenTypeEnum.MULTI_FILE,1l);
 
        //阻塞等待所有数据收集完成
         List<String> result = codeStream.collectList().block();
@@ -32,7 +32,7 @@ class AiCodeGeneratorFacadeTest {
     }
     @Test
     void GenerateAndSaveCodeStream1() {
-        Flux<String> codeStream = aiCodeGeneratorFacade.generateAndSaveCodeStream("生成一个个人主页界面，不超过50行", CodeGenTypeEnum.HTML);
+        Flux<String> codeStream = aiCodeGeneratorFacade.generateAndSaveCodeStream("生成一个个人主页界面，不超过50行", CodeGenTypeEnum.HTML,1l);
 
         //阻塞等待所有数据收集完成
         List<String> result = codeStream.collectList().block();

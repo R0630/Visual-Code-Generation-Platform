@@ -1,0 +1,180 @@
+/* ==========================================================================
+ *  全局主题：紫色 · 简约 · 插画风
+ *  - 统一的设计变量与通用样式，所有页面复用，避免各页各写一套颜色
+ *  - 业务页面优先使用这里的 CSS 变量与工具类
+ * ========================================================================== */
+
+:root {
+  /* 主色：紫色系 */
+  --purple-700: #5b21b6;
+  --purple-600: #7c3aed;
+  --purple-500: #8b5cf6;
+  --purple-400: #a78bfa;
+  --purple-300: #c4b5fd;
+  --purple-200: #ddd6fe;
+  --purple-100: #ede9fe;
+  --purple-50: #f6f4ff;
+
+  /* 中性色 */
+  --ink-900: #1f1147;
+  --ink-700: #3b2f63;
+  --ink-500: #6b6478;
+  --ink-300: #9b95aa;
+  --line: #ece9f6;
+  --surface: #ffffff;
+
+  /* 语义色 */
+  --success: #16a34a;
+  --warning: #f59e0b;
+  --danger: #ef4444;
+
+  /* 尺寸 */
+  --radius-sm: 10px;
+  --radius-md: 16px;
+  --radius-lg: 24px;
+
+  /* 阴影 */
+  --shadow-sm: 0 2px 8px rgba(124, 58, 237, 0.08);
+  --shadow-md: 0 8px 24px rgba(124, 58, 237, 0.12);
+  --shadow-lg: 0 16px 40px rgba(124, 58, 237, 0.18);
+
+  /* 页面背景（插画风：浅紫渐变 + 柔和光斑） */
+  --page-bg: linear-gradient(180deg, #f8f5ff 0%, #f4efff 40%, #efe8ff 100%);
+}
+
+* {
+  box-sizing: border-box;
+}
+
+html,
+body,
+#app {
+  height: 100%;
+}
+
+body {
+  margin: 0;
+  background: var(--page-bg);
+  background-attachment: fixed;
+  color: var(--ink-900);
+  font-family:
+    -apple-system, BlinkMacSystemFont, 'Segoe UI', 'PingFang SC', 'Microsoft YaHei', Roboto,
+    'Helvetica Neue', Arial, sans-serif;
+  -webkit-font-smoothing: antialiased;
+}
+
+/* --------------------------------------------------------------------------
+ *  通用工具类
+ * -------------------------------------------------------------------------- */
+
+/* 页面容器：所有独立页面用它包一层 */
+.page-shell {
+  width: 100%;
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 24px 20px 48px;
+}
+
+/* 卡片：白底圆角 + 淡紫描边 */
+.purple-card {
+  background: var(--surface);
+  border: 1px solid var(--line);
+  border-radius: var(--radius-md);
+  box-shadow: var(--shadow-sm);
+  padding: 24px;
+}
+
+/* 章节标题 */
+.section-title {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  margin: 0 0 20px;
+  font-size: 22px;
+  font-weight: 700;
+  color: var(--ink-900);
+}
+
+/* 章节标题左侧的小紫色竖条 */
+.section-title::before {
+  content: '';
+  width: 6px;
+  height: 22px;
+  border-radius: 3px;
+  background: linear-gradient(180deg, var(--purple-500), var(--purple-700));
+}
+
+/* 渐变文字标题 */
+.gradient-text {
+  background: linear-gradient(120deg, var(--purple-600), var(--purple-400));
+  -webkit-background-clip: text;
+  background-clip: text;
+  -webkit-text-fill-color: transparent;
+}
+
+/* 页面副标题 / 说明文字 */
+.page-desc {
+  margin: 0 0 20px;
+  color: var(--ink-500);
+  font-size: 14px;
+}
+
+/* 插画装饰容器 */
+.illustration-wrap {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.illustration-wrap img {
+  max-width: 100%;
+  height: auto;
+}
+
+/* 占位提示（需要用户自行替换的描述/图片位） */
+.placeholder-hint {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  padding: 2px 8px;
+  border-radius: 999px;
+  background: var(--purple-50);
+  border: 1px dashed var(--purple-300);
+  color: var(--purple-600);
+  font-size: 12px;
+  line-height: 20px;
+}
+
+/* 空状态 */
+.empty-state {
+  padding: 48px 24px;
+  text-align: center;
+  color: var(--ink-500);
+}
+
+/* 淡紫渐变按钮（用于主要操作） */
+.btn-purple {
+  background: linear-gradient(135deg, var(--purple-600), var(--purple-500));
+  border: none;
+  color: #fff;
+  box-shadow: var(--shadow-md);
+}
+
+.btn-purple:hover {
+  background: linear-gradient(135deg, var(--purple-700), var(--purple-600));
+}
+
+/* 覆盖 antd 表格头，统一淡紫底 */
+.ant-table-thead > tr > th {
+  background: var(--purple-50) !important;
+  color: var(--ink-700) !important;
+}
+
+/* 覆盖 antd 分页选中色 */
+.ant-pagination-item-active {
+  border-color: var(--purple-500) !important;
+}
+
+.ant-pagination-item-active a {
+  color: var(--purple-600) !important;
+}
