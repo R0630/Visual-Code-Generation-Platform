@@ -2,6 +2,7 @@ package com.qiyiqi.aicode.core;
 
 
 import com.qiyiqi.aicode.ai.AiCodeGeneratorService;
+import com.qiyiqi.aicode.ai.AiCodeGeneratorServiceFactory;
 import com.qiyiqi.aicode.ai.model.HtmlCodeResult;
 import com.qiyiqi.aicode.ai.model.MultiFileCodeResult;
 import com.qiyiqi.aicode.core.parser.CodeParserExecutor;
@@ -23,8 +24,11 @@ import java.io.File;
 @Slf4j
 public class AiCodeGeneratorFacade {
 
+
     @Resource
-    private AiCodeGeneratorService aiCodeGeneratorService;
+    private AiCodeGeneratorServiceFactory aiCodeGeneratorServiceFactory;
+
+
 
     /**
      * 统一入口：根据类型生成并保存代码
@@ -34,6 +38,10 @@ public class AiCodeGeneratorFacade {
      * @return 保存的目录
      */
     public File generateAndSaveCode(String userMessage, CodeGenTypeEnum codeGenTypeEnum,Long appId) {
+
+        // 根据 appId 获取对应的 AI 服务实例
+        AiCodeGeneratorService aiCodeGeneratorService = aiCodeGeneratorServiceFactory.getAiCodeGeneratorService(appId);
+
         if (codeGenTypeEnum == null) {
             throw new BusinessException(ErrorCode.SYSTEM_ERROR, "生成类型为空");
         }
@@ -60,6 +68,10 @@ public class AiCodeGeneratorFacade {
      * @param codeGenTypeEnum 生成类型
      */
     public Flux<String> generateAndSaveCodeStream(String userMessage, CodeGenTypeEnum codeGenTypeEnum,Long appId) {
+
+        // 根据 appId 获取对应的 AI 服务实例
+        AiCodeGeneratorService aiCodeGeneratorService = aiCodeGeneratorServiceFactory.getAiCodeGeneratorService(appId);
+
         if (codeGenTypeEnum == null) {
             throw new BusinessException(ErrorCode.SYSTEM_ERROR, "生成类型为空");
         }

@@ -124,6 +124,12 @@
             <version>1.1.0-beta7</version>
         </dependency>
 
+        <dependency>
+            <groupId>dev.langchain4j</groupId>
+            <artifactId>langchain4j-community-redis-spring-boot-starter</artifactId>
+            <version>1.1.0-beta7</version>
+        </dependency>
+
 
         <!-- OpenAI 集成 (版本由 BOM 管理) -->
         <dependency>
@@ -137,6 +143,13 @@
             <artifactId>langchain4j-http-client-jdk</artifactId>
         </dependency>
         <!-- ======================================== -->
+
+        <!--   本地缓存     -->
+        <dependency>
+            <groupId>com.github.ben-manes.caffeine</groupId>
+            <artifactId>caffeine</artifactId>
+        </dependency>
+
 
         <!-- 测试依赖 -->
         <dependency>

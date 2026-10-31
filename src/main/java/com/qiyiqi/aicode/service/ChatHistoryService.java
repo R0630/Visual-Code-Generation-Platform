@@ -8,6 +8,7 @@ import com.qiyiqi.aicode.exception.ThrowUtils;
 import com.qiyiqi.aicode.model.dto.chathistory.ChatHistoryQueryRequest;
 import com.qiyiqi.aicode.model.entity.ChatHistory;
 import com.qiyiqi.aicode.model.entity.User;
+import dev.langchain4j.memory.chat.MessageWindowChatMemory;
 
 import java.time.LocalDateTime;
 
@@ -54,4 +55,14 @@ public interface ChatHistoryService extends IService<ChatHistory> {
     Page<ChatHistory> listAppChatHistoryByPage(Long appId, int pageSize,
                                                LocalDateTime lastCreateTime,
                                                User loginUser);
+
+
+    /**
+     *  加载历史对话到记忆中
+     * @param appId 应用id
+     * @param chatMemory 记忆
+     * @param maxCount 最大加载数量
+     * @return 加载的数量
+     */
+    int loadChatHistoryToMemory(Long appId, MessageWindowChatMemory chatMemory, int maxCount);
 }

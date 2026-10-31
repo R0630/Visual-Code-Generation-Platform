@@ -2,7 +2,9 @@ package com.qiyiqi.aicode.ai;
 
 import com.qiyiqi.aicode.ai.model.HtmlCodeResult;
 import com.qiyiqi.aicode.ai.model.MultiFileCodeResult;
+import dev.langchain4j.service.MemoryId;
 import dev.langchain4j.service.SystemMessage;
+import dev.langchain4j.service.UserMessage;
 import reactor.core.publisher.Flux;
 
 public interface AiCodeGeneratorService {
@@ -13,7 +15,7 @@ public interface AiCodeGeneratorService {
      */
 
     @SystemMessage(fromResource = "prompt/html-system-prompt.txt")
-    HtmlCodeResult generateHtmlCode(String userMessage);
+    HtmlCodeResult generateHtmlCode(@UserMessage String userMessage);
 
 
     /**
