@@ -14,14 +14,17 @@ export const CODE_GEN_TYPE_CONFIG = {
   [CodeGenTypeEnum.HTML]: {
     label: '原生 HTML 模式',
     value: CodeGenTypeEnum.HTML,
+    desc: '生成单个 HTML 文件，适合简单页面',
   },
   [CodeGenTypeEnum.MULTI_FILE]: {
     label: '原生多文件模式',
     value: CodeGenTypeEnum.MULTI_FILE,
+    desc: '生成 HTML / CSS / JS 多文件，结构更清晰',
   },
   [CodeGenTypeEnum.VUE_PROJECT]: {
     label: 'Vue 项目模式',
     value: CodeGenTypeEnum.VUE_PROJECT,
+    desc: '生成完整 Vue 项目，功能更丰富',
   },
 } as const
 

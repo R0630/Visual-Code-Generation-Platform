@@ -40,6 +40,7 @@ export const getDeployUrl = (deployKeyOrUrl: string) => {
  * 对于 VUE_PROJECT，StaticResourceController 会自动优先返回 dist/index.html，
  * 前端直接访问目录即可，无需手动加 dist/index.html（否则会导致资源路径嵌套错误）
  */
-export const getStaticPreviewUrl = (codeGenType: string, appId: string) => {
+export const getStaticPreviewUrl = (codeGenType?: string, appId?: string) => {
+  if (!codeGenType || !appId) return ''
   return `${STATIC_BASE_URL}/${codeGenType}_${appId}/`
 }
