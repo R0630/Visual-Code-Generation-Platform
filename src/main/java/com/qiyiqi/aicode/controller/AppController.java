@@ -122,8 +122,10 @@ public class AppController {
             String initPrompt = app.getInitPrompt();
             app.setAppName(initPrompt.substring(0, Math.min(initPrompt.length(),12)));
         }
-        // 默认生成多文件类型
-            app.setCodeGenType(CodeGenTypeEnum.MULTI_FILE.getValue());
+        // 默认生成多文件类型；若用户指定了类型且合法，则使用用户指定的类型
+        String codeGenType = appAddRequest.getCodeGenType();
+        CodeGenTypeEnum codeGenTypeEnum = CodeGenTypeEnum.getEnumByValue(codeGenType);
+        app.setCodeGenType(codeGenTypeEnum != null ? codeGenTypeEnum.getValue() : CodeGenTypeEnum.MULTI_FILE.getValue());
         app.setUserId(loginUser.getId());
         app.setPriority(0);
         app.setEditTime(LocalDateTime.now());

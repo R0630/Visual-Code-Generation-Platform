@@ -22,5 +22,11 @@ public class AppAddRequest implements Serializable {
      */
     private String initPrompt;
 
+    /**
+     * 代码生成类型（可选，取值见 CodeGenTypeEnum：html / multi_file / vue_project，
+     * 未传时默认为 multi_file）
+     */
+    private String codeGenType;
+
     private static final long serialVersionUID = 1L;
 }

@@ -8,6 +8,8 @@ import dev.langchain4j.service.UserMessage;
 import reactor.core.publisher.Flux;
 
 public interface AiCodeGeneratorService {
+
+
     /**
      * 根据用户输入生成HTML代码
      * @param userMessage
@@ -25,8 +27,7 @@ public interface AiCodeGeneratorService {
      */
 
     @SystemMessage(fromResource = "prompt/multi-file-system-prompt.txt")
-    MultiFileCodeResult generateMultiFileCode(String userMessage);
-
+    MultiFileCodeResult generateMultiFileCode(@UserMessage String userMessage);
 
     /**
      * 根据用户输入生成HTML代码
@@ -35,7 +36,7 @@ public interface AiCodeGeneratorService {
      */
 
     @SystemMessage(fromResource = "prompt/html-system-prompt.txt")
-   Flux<String> generateHtmlCodeStream(String userMessage);
+   Flux<String> generateHtmlCodeStream(@MemoryId long appId, @UserMessage String userMessage);
 
 
     /**
@@ -45,5 +46,19 @@ public interface AiCodeGeneratorService {
      */
 
     @SystemMessage(fromResource = "prompt/multi-file-system-prompt.txt")
-    Flux<String> generateMultiFileCodeStream(String userMessage);
+    Flux<String> generateMultiFileCodeStream(@MemoryId long appId, @UserMessage String userMessage);
+
+    /**
+     * 生成 Vue 项目代码（流式）
+     *
+     * @param userMessage 用户消息
+     * @return 生成过程的流式响应
+     */
+    @SystemMessage(fromResource = "prompt/vue-project-system-prompt.txt")
+    Flux<String> generateVueProjectCodeStream(@MemoryId long appId, @UserMessage String userMessage);
+
+
+
+
+
 }

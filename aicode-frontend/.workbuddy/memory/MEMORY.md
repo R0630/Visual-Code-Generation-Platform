@@ -24,6 +24,10 @@
 - antd-vue 下拉菜单 a-dropdown 默认 hover 触发，写自动化测试时用 `trigger="click"` 更稳。
 - 冒烟测试方案：本机无 playwright/agent-browser 时，可用 Edge/Chrome headless + `--remote-debugging-port` + Node 22 全局 WebSocket 走 CDP（Runtime.evaluate 填表单、点击、截图），脚本放 Temp 目录用完即删。登录步骤直接在页内 `fetch('/api/user/login', ...)` 比填表单稳。
 - TS 开了 `noUncheckedIndexedAccess`：数组下标访问一律判为可能 undefined，用 `arr.at(-1)?.x` 或安全 getter 包一层。
+- 素材图片文件名一律用 ASCII（中文文件名在构建工具链有风险），用户给的中文素材复制进 `src/assets/decor/` 后重命名（当前：planet/sparkles/astrolabe/star-ring.png）。
+- 验证仅生成期渲染的 UI（如加载覆盖层）：dev 模式 CDP 里用 `el.__vueParentComponent.setupState.xxx = value` 直接改响应式状态（ref 已解包，赋原始值即可）。
+- `npm run build` 含 type-check，能抓到 `vue-tsc --noEmit` 之外的模板引用错误；删除某 import 前先确认模板没有其他地方还在用。
+- 后端 AI 生成接口若返回 50000 系统错误 → 检查后端 AI API Key/额度（2026-11-10 曾出现，前端兜底行为正常）。
 
 ## 后端本地启动注意事项
 

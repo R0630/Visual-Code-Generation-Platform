@@ -16,9 +16,11 @@
         <header class="panel-header">
           <div class="panel-title-wrap">
             <h2 class="panel-title gradient-text">{{ appInfo?.appName || 'AI 网站生成' }}</h2>
-            <a-tag v-if="appInfo?.codeGenType" color="purple">
-              {{ formatCodeGenType(appInfo.codeGenType) }}
-            </a-tag>
+            <a-tooltip v-if="appInfo?.codeGenType" :title="codeGenTypeDesc">
+              <a-tag :color="codeGenTypeColor">
+                {{ formatCodeGenType(appInfo.codeGenType) }}
+              </a-tag>
+            </a-tooltip>
           </div>
           <a-button v-if="canManage" size="small" @click="editApp">
             <template #icon>
@@ -44,7 +46,7 @@
             <a-avatar v-if="item.type === 'ai'" :src="aiAvatar" :size="32" class="avatar" />
             <div class="bubble">
               <div v-if="item.loading" class="loading-line">
-                <a-spin size="small" />
+                <PlanetLoader :size="20" />
                 <span>AI 正在生成中...</span>
               </div>
               <div v-else class="bubble-text">{{ item.content }}</div>
@@ -145,47 +147,77 @@
           />
           <div v-else class="empty-state">
             <div class="illustration-wrap">
-              <img :src="emptyIllustration" alt="暂无预览" class="empty-illustration" />
+              <img :src="astrolabe" alt="等待构筑" class="empty-deco" />
             </div>
             <p class="empty-title">还没有生成内容</p>
             <p class="empty-desc">
               【对话产生至少 2 条记录（一轮问答）后，这里会展示生成的网站效果】
             </p>
           </div>
+
+          <!-- 生成中动画覆盖层：星球与黑猫分阶段出现，避免并列拥挤 -->
+          <div v-if="isGenerating" class="generating-overlay">
+            <div v-if="generatingStage === 'planet'" class="generating-planet">
+              <PlanetLoader :size="130" />
+            </div>
+            <div v-else class="generating-cat">
+              <CatLoader text="小黑猫正在敲代码" />
+            </div>
+            <p class="generating-tip">
+              {{ generatingTip }}<span class="generating-dots"><i></i><i></i><i></i></span>
+            </p>
+          </div>
         </div>
       </section>
     </div>
 
-    <!-- 部署成功弹窗 -->
+    <!-- 部署成功弹窗：突出公网访问链接 -->
     <a-modal v-model:open="deployModalVisible" title="部署成功" :footer="null" width="560px">
       <div class="deploy-result">
-        <a-descriptions :column="1" bordered size="small">
-          <a-descriptions-item label="部署地址">
-            <a-typography-text class="link-text">{{ deployedUrl }}</a-typography-text>
-          </a-descriptions-item>
-          <a-descriptions-item label="静态预览地址">
-            <a-typography-text class="link-text">{{ staticPreviewUrl }}</a-typography-text>
-          </a-descriptions-item>
-        </a-descriptions>
+        <div class="deploy-success-head">
+          <CheckCircleFilled class="deploy-success-icon" />
+          <div>
+            <p class="deploy-success-title">部署成功！你的网站已公开上线</p>
+            <p class="deploy-success-desc">任何人在浏览器打开下方链接即可直接访问使用</p>
+          </div>
+        </div>
+
+        <div class="deploy-link-box">
+          <span class="deploy-link-label">公开访问地址</span>
+          <a-typography-paragraph class="deploy-link-text" copyable>{{ deployedUrl }}</a-typography-paragraph>
+          <div class="deploy-actions">
+            <a-button type="primary" class="btn-purple" @click="openDeployedSite">
+              <template #icon>
+                <ExportOutlined />
+              </template>
+              打开网站
+            </a-button>
+            <a-button @click="copyLink(deployedUrl)">复制链接</a-button>
+          </div>
+        </div>
+
+        <div class="deploy-sub">
+          <span class="deploy-sub-label">静态预览地址</span>
+          <a-typography-paragraph class="deploy-sub-text" copyable>
+            {{ staticPreviewUrl }}
+          </a-typography-paragraph>
+        </div>
         <p class="deploy-tip">
           <span class="placeholder-hint">
-            【部署域名请在后端 AppConstant.CODE_DEPLOY_HOST 配置】
+            【正式部署域名请在后端 AppConstant.CODE_DEPLOY_HOST 配置】
           </span>
         </p>
-        <div class="deploy-actions">
-          <a-button type="primary" class="btn-purple" @click="openDeployedSite">打开预览</a-button>
-          <a-button @click="copyLink(deployedUrl)">复制链接</a-button>
-        </div>
       </div>
     </a-modal>
   </div>
 </template>
 
 <script setup lang="ts">
-import { computed, nextTick, onMounted, onUnmounted, ref } from 'vue'
+import { computed, nextTick, onMounted, onUnmounted, ref, watch } from 'vue'
 import { useRoute, useRouter } from 'vue-router'
 import { message } from 'ant-design-vue'
 import {
+  CheckCircleFilled,
   CloudUploadOutlined,
   EditOutlined,
   ExportOutlined,
@@ -199,12 +231,15 @@ import {
 import { chatHistoryControllerListAppChatHistory } from '@/api/chatHistoryController'
 import { useLoginUserStore } from '@/stores/loginUser'
 import { API_BASE_URL, getDeployUrl, getStaticPreviewUrl } from '@/config/env'
-import { formatCodeGenType } from '@/utils/codeGenTypes'
+import { CODE_GEN_TYPE_CONFIG, CodeGenTypeEnum, formatCodeGenType } from '@/utils/codeGenTypes'
 import { formatTime } from '@/utils/time'
 import request from '@/request'
-// AI 头像与空状态插画：需要替换时直接覆盖 assets/illustrations 下的同名文件
+import PlanetLoader from '@/components/PlanetLoader.vue'
+import CatLoader from '@/components/CatLoader.vue'
+// AI 头像与装饰素材：需要替换时直接覆盖 assets 下的同名文件
 import aiAvatar from '@/assets/illustrations/ai-avatar.svg'
 import emptyIllustration from '@/assets/illustrations/empty-illustration.svg'
+import astrolabe from '@/assets/decor/astrolabe.png'
 
 /** 页面内维护的一条对话消息 */
 interface ChatMessage {
@@ -288,6 +323,49 @@ const inputPlaceholder = computed(() => {
   if (isGenerating.value) return 'AI 正在生成中，请稍候...'
   return '描述你想生成的网站，越详细效果越好'
 })
+
+/** 生成过程中的阶段提示（随时间轮播），星球与黑猫交替分阶段展示 */
+const GENERATING_TIPS = [
+  '星球开始转动，正在理解你的需求',
+  '正在设计页面结构与配色',
+  '小黑猫敲代码中，正在编写页面',
+  '正在打磨细节，即将完成',
+] as const
+
+const generatingTipIndex = ref(0)
+let tipTimer: ReturnType<typeof setInterval> | undefined
+
+watch(isGenerating, (active) => {
+  if (active) {
+    generatingTipIndex.value = 0
+    tipTimer = setInterval(() => {
+      generatingTipIndex.value = (generatingTipIndex.value + 1) % GENERATING_TIPS.length
+    }, 2600)
+  } else if (tipTimer) {
+    clearInterval(tipTimer)
+    tipTimer = undefined
+  }
+})
+
+const generatingTip = computed(() => GENERATING_TIPS[generatingTipIndex.value] ?? '正在努力生成中')
+
+/** 生成类型标签：颜色与说明跟随应用实际存储的 codeGenType 变化 */
+const codeGenTypeColor = computed(() => {
+  const map: Record<string, string> = {
+    html: 'cyan',
+    multi_file: 'purple',
+    vue_project: 'geekblue',
+  }
+  return map[appInfo.value?.codeGenType ?? ''] ?? 'default'
+})
+
+const codeGenTypeDesc = computed(() => {
+  const config = CODE_GEN_TYPE_CONFIG[appInfo.value?.codeGenType as CodeGenTypeEnum]
+  return config ? `创建应用时选择的生成模式：${config.desc}` : ''
+})
+
+/** 前两个阶段展示星球动画，后两个阶段切换为黑猫动画 */
+const generatingStage = computed(() => (generatingTipIndex.value < 2 ? 'planet' : 'cat'))
 
 /** 关闭 SSE 连接 */
 const closeEventSource = () => {
@@ -639,6 +717,10 @@ onMounted(async () => {
 
 onUnmounted(() => {
   closeEventSource()
+  if (tipTimer) {
+    clearInterval(tipTimer)
+    tipTimer = undefined
+  }
 })
 </script>
 
@@ -834,6 +916,7 @@ onUnmounted(() => {
 
 /* 预览区 */
 .preview-stage {
+  position: relative;
   height: 520px;
   border: 1px solid var(--line);
   border-radius: var(--radius-sm);
@@ -848,25 +931,185 @@ onUnmounted(() => {
   background: var(--surface);
 }
 
+/* 预览空状态里的星象盘装饰：缓慢旋转 */
+.empty-deco {
+  width: 120px;
+  margin-bottom: 12px;
+  opacity: 0.85;
+  animation: deco-spin 22s linear infinite;
+  filter: drop-shadow(0 0 10px rgba(139, 92, 246, 0.35));
+}
+
+@keyframes deco-spin {
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+/* 生成中覆盖层：星球自转 + 小黑猫 */
+.generating-overlay {
+  position: absolute;
+  inset: 0;
+  z-index: 5;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 14px;
+  padding: 24px;
+  background: rgba(250, 245, 255, 0.88);
+  backdrop-filter: blur(3px);
+}
+
+.generating-planet {
+  animation: planet-float 3.6s ease-in-out infinite;
+}
+
+@keyframes planet-float {
+  0%,
+  100% {
+    transform: translateY(0);
+  }
+  50% {
+    transform: translateY(-10px);
+  }
+}
+
+.generating-tip {
+  margin: 0;
+  font-size: 15px;
+  font-weight: 600;
+  color: var(--purple-600);
+}
+
+.generating-dots {
+  display: inline-flex;
+  gap: 3px;
+  margin-left: 5px;
+}
+
+.generating-dots i {
+  width: 5px;
+  height: 5px;
+  border-radius: 50%;
+  background: currentColor;
+  animation: generating-dot 1.2s ease-in-out infinite;
+}
+
+.generating-dots i:nth-child(2) {
+  animation-delay: 0.15s;
+}
+
+.generating-dots i:nth-child(3) {
+  animation-delay: 0.3s;
+}
+
+@keyframes generating-dot {
+  0%,
+  60%,
+  100% {
+    transform: translateY(0);
+    opacity: 0.5;
+  }
+  30% {
+    transform: translateY(-5px);
+    opacity: 1;
+  }
+}
+
+.generating-cat {
+  animation: planet-float 4.4s ease-in-out infinite reverse;
+}
+
 /* 部署弹窗 */
 .deploy-result {
   display: flex;
   flex-direction: column;
+  gap: 14px;
+}
+
+.deploy-success-head {
+  display: flex;
+  align-items: center;
   gap: 12px;
+  padding: 12px 14px;
+  border-radius: var(--radius-sm);
+  background: linear-gradient(135deg, rgba(124, 58, 237, 0.1), rgba(167, 139, 250, 0.14));
+  border: 1px solid var(--purple-200);
 }
 
-.link-text {
-  word-break: break-all;
+.deploy-success-icon {
+  font-size: 30px;
+  color: var(--purple-600);
 }
 
-.deploy-tip {
+.deploy-success-title {
+  margin: 0 0 2px;
+  font-size: 15px;
+  font-weight: 700;
+  color: var(--ink-900);
+}
+
+.deploy-success-desc {
   margin: 0;
+  font-size: 13px;
+  color: var(--ink-500);
+}
+
+.deploy-link-box {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  padding: 14px;
+  border: 1.5px dashed var(--purple-300, #c4b5fd);
+  border-radius: var(--radius-sm);
+  background: var(--purple-50);
+}
+
+.deploy-link-label {
+  font-size: 12px;
+  font-weight: 600;
+  color: var(--purple-600);
+  letter-spacing: 1px;
+}
+
+.deploy-link-text {
+  margin: 0;
+  font-size: 14px;
+  font-weight: 600;
+  color: var(--ink-900);
+  word-break: break-all;
 }
 
 .deploy-actions {
   display: flex;
   justify-content: flex-end;
   gap: 8px;
+  margin-top: 4px;
+}
+
+.deploy-sub {
+  display: flex;
+  align-items: baseline;
+  gap: 8px;
+  flex-wrap: wrap;
+}
+
+.deploy-sub-label {
+  flex-shrink: 0;
+  font-size: 12px;
+  color: var(--ink-500);
+}
+
+.deploy-sub-text {
+  margin: 0;
+  font-size: 12px;
+  color: var(--ink-700);
+  word-break: break-all;
+}
+
+.deploy-tip {
+  margin: 0;
 }
 
 /* 响应式：窄屏上下堆叠 */

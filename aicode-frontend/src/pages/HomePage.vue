@@ -6,6 +6,8 @@
     <div class="container">
       <!-- 提示词输入区 -->
       <div class="prompt-card purple-card">
+        <!-- 装饰：缓慢旋转的星象盘 -->
+        <img :src="astrolabeImg" class="deco-astrolabe" alt="" aria-hidden="true" />
         <div class="prompt-header">
           <span class="prompt-label">【描述你想做的网站，AI 帮你生成】</span>
         </div>
@@ -16,6 +18,20 @@
           :maxlength="1000"
           class="prompt-input"
         />
+        <!-- 代码生成类型选择 -->
+        <div class="code-gen-type-selector">
+          <span class="type-label">生成模式：</span>
+          <a-radio-group v-model:value="selectedCodeGenType" button-style="solid">
+            <a-radio-button
+              v-for="opt in codeGenTypeOptions"
+              :key="opt.value"
+              :value="opt.value"
+            >
+              {{ opt.label }}
+            </a-radio-button>
+          </a-radio-group>
+          <span class="type-desc">{{ codeGenTypeDesc }}</span>
+        </div>
         <div class="prompt-actions">
           <span class="prompt-tip">「生成过程约需 1-2 分钟，可在对话页继续修改」</span>
           <a-button
@@ -42,7 +58,10 @@
 
       <!-- 我的作品 -->
       <div class="section">
-        <h2 class="section-title">我的作品</h2>
+        <h2 class="section-title">
+          <img :src="starRingImg" class="section-orn" alt="" aria-hidden="true" />
+          我的作品
+        </h2>
         <p class="page-desc">「你创建过的应用，点击可直接进入对话继续修改」</p>
 
         <template v-if="loginUserStore.loginUser.id">
@@ -80,8 +99,11 @@
 
       <!-- 精选案例 -->
       <div class="section">
-        <h2 class="section-title">精选案例</h2>
-        <p class="page-desc">「管理员设为精选的应用，供你参考」</p>
+        <h2 class="section-title">
+          <img :src="starRingImg" class="section-orn" alt="" aria-hidden="true" />
+          精选案例
+        </h2>
+        <p class="page-desc">「管理员设为精选的应用，悬浮卡片可实时预览效果」</p>
 
         <div v-if="featuredApps.length" class="app-grid">
           <AppCard
@@ -114,7 +136,7 @@
 </template>
 
 <script setup lang="ts">
-import { onMounted, reactive, ref } from 'vue'
+import { computed, onMounted, reactive, ref } from 'vue'
 import { useRouter } from 'vue-router'
 import { message } from 'ant-design-vue'
 import { SendOutlined } from '@ant-design/icons-vue'
@@ -127,6 +149,10 @@ import {
 import { getDeployUrl } from '@/config/env'
 import AppCard from '@/components/AppCard.vue'
 import HeroCover from '@/components/HeroCover.vue'
+import { CODE_GEN_TYPE_CONFIG, CODE_GEN_TYPE_OPTIONS, CodeGenTypeEnum } from '@/utils/codeGenTypes'
+// 装饰素材：星象盘（输入卡装饰）、星环（区块标题装饰）
+import astrolabeImg from '@/assets/decor/astrolabe.png'
+import starRingImg from '@/assets/decor/star-ring.png'
 
 const router = useRouter()
 const loginUserStore = useLoginUserStore()
@@ -134,6 +160,14 @@ const loginUserStore = useLoginUserStore()
 // 用户提示词
 const userPrompt = ref('')
 const creating = ref(false)
+
+// 代码生成类型选择（默认多文件模式）
+const selectedCodeGenType = ref<string>(CodeGenTypeEnum.MULTI_FILE)
+const codeGenTypeOptions = CODE_GEN_TYPE_OPTIONS
+const codeGenTypeDesc = computed(() => {
+  const config = CODE_GEN_TYPE_CONFIG[selectedCodeGenType.value as CodeGenTypeEnum]
+  return config?.desc ?? ''
+})
 
 // 快捷提示词（标题 + 完整提示词，可自行增删）
 const quickPrompts = [
@@ -184,7 +218,10 @@ const createApp = async () => {
   }
   creating.value = true
   try {
-    const res = await appControllerAddApp({ initPrompt: userPrompt.value.trim() })
+    const res = await appControllerAddApp({
+      initPrompt: userPrompt.value.trim(),
+      codeGenType: selectedCodeGenType.value,
+    })
     if (res.data.code === 0 && res.data.data) {
       message.success('应用创建成功')
       await router.push(`/app/chat/${String(res.data.data)}`)
@@ -269,8 +306,43 @@ onMounted(() => {
 }
 
 .prompt-card {
+  position: relative;
+  overflow: hidden;
   margin: 8px 0 40px;
   box-shadow: var(--shadow-md);
+}
+
+/* 提示词卡片右上角的星象盘装饰 */
+.deco-astrolabe {
+  position: absolute;
+  top: -34px;
+  right: -30px;
+  width: 132px;
+  pointer-events: none;
+  opacity: 0.5;
+  animation: astrolabe-spin 26s linear infinite;
+  filter: drop-shadow(0 0 8px rgba(139, 92, 246, 0.35));
+}
+
+@keyframes astrolabe-spin {
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+/* 区块标题前的星环装饰 */
+.section-title {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.section-orn {
+  width: 34px;
+  height: 34px;
+  object-fit: contain;
+  animation: astrolabe-spin 18s linear infinite reverse;
+  filter: drop-shadow(0 0 6px rgba(139, 92, 246, 0.4));
 }
 
 .prompt-header {
@@ -297,6 +369,25 @@ onMounted(() => {
 }
 
 .prompt-tip {
+  font-size: 12px;
+  color: var(--ink-300);
+}
+
+.code-gen-type-selector {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  margin-top: 14px;
+  flex-wrap: wrap;
+}
+
+.code-gen-type-selector .type-label {
+  font-size: 14px;
+  color: var(--ink-500);
+  white-space: nowrap;
+}
+
+.code-gen-type-selector .type-desc {
   font-size: 12px;
   color: var(--ink-300);
 }

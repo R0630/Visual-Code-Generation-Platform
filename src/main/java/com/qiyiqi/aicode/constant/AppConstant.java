@@ -51,8 +51,11 @@ public interface AppConstant {
 
     /**
      * 应用部署域名
+     * 说明：部署产物保存在 code_deploy/{deployKey}，由 DeployResourceController 提供访问，
+     * 对外展示统一用 xinggou 路径（简洁专业，不暴露后端 API 结构）。
+     * 完整格式：http://localhost:8123/api/xinggou/{deployKey}
      */
-    String CODE_DEPLOY_HOST = "http://localhost";
+    String CODE_DEPLOY_HOST = "http://localhost:8123/api/xinggou";
 
 
 }

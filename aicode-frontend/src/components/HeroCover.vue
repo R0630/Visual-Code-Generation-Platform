@@ -24,9 +24,9 @@
         </h1>
         <p class="cosmic-subtitle">用一句话，生成一个完整的网站应用</p>
         <div class="cosmic-tags">
-          <span class="cosmic-tag">【无需写代码】</span>
-          <span class="cosmic-tag">【实时预览】</span>
-          <span class="cosmic-tag">【一键部署】</span>
+          <span class="cosmic-tag">无需写代码</span>
+          <span class="cosmic-tag">实时预览</span>
+          <span class="cosmic-tag">一键部署</span>
         </div>
       </div>
 
@@ -445,12 +445,13 @@ const onMouseLeave = () => {
 }
 
 .cosmic-tag {
-  padding: 5px 14px;
+  padding: 8px 22px;
   border-radius: 999px;
   border: 1px solid rgba(196, 181, 253, 0.4);
   background: rgba(124, 58, 237, 0.18);
   color: #ddd6fe;
-  font-size: 13px;
+  font-size: 17px;
+  font-weight: 500;
   backdrop-filter: blur(4px);
 }
 

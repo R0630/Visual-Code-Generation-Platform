@@ -20,6 +20,13 @@ export default defineConfig({
         target: 'http://localhost:8123',
         changeOrigin: true,
       },
+      // 部署作品访问链接（xinggou）：前端用 /xinggou/{key}/，
+      // rewrite 后后端实际收到 /api/xinggou/{key}/
+      '/xinggou': {
+        target: 'http://localhost:8123',
+        changeOrigin: true,
+        rewrite: (path) => path.replace(/^\/xinggou/, '/api/xinggou'),
+      },
     },
   },
 })

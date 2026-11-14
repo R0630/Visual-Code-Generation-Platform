@@ -175,6 +175,12 @@ const doLogout = async () => {
   line-height: 62px;
 }
 
+/* 导航菜单文字加大加粗，更醒目 */
+.header-center :deep(.ant-menu-item) {
+  font-size: 17px;
+  font-weight: 500;
+}
+
 .header-right {
   flex-shrink: 0;
 }
